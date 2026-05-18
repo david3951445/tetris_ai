@@ -14,7 +14,7 @@ class Config:
     hidden_dim: int = 64  # neurons per hidden layer
 
     # --- Optimiser ---
-    lr: float = 1e-3  # Adam learning rate
+    learning_rate: float = 1e-3  # Adam learning rate
     gamma: float = 0.99  # discount factor; high = value future rewards more
 
     # --- Exploration (ε-greedy) ---

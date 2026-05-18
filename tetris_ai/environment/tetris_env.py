@@ -1,4 +1,4 @@
-from typing import Generator, List, Tuple
+from collections.abc import Generator
 import numpy as np
 
 from .board import Board
@@ -29,7 +29,7 @@ class TetrisEnv:
     # Gym-style interface
     # ------------------------------------------------------------------
 
-    def reset(self) -> List[List[float]]:
+    def reset(self) -> list[dict]:
         self.board.reset()
         self.score = 0
         self.total_lines = 0
@@ -38,7 +38,7 @@ class TetrisEnv:
         self.next_piece = next(self._bag)
         return self._get_legal_states(self.current_piece)
 
-    def step(self, action: Tuple[int, int]) -> Tuple[List[List[float]], float, bool]:
+    def step(self, action: tuple[int, int]) -> tuple[list[dict], float, bool]:
         """
         action: (col, rotation) chosen by the agent.
         Returns (next_legal_states, reward, done).
@@ -65,7 +65,7 @@ class TetrisEnv:
     # Helpers
     # ------------------------------------------------------------------
 
-    def _get_legal_states(self, piece: Piece) -> List[List[float]]:
+    def _get_legal_states(self, piece: Piece) -> list[dict]:
         """
         Enumerate all (col, rotation) placements for the piece.
         For each, return the board state features *after* that placement

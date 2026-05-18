@@ -1,5 +1,4 @@
 import numpy as np
-from typing import List
 
 from .coord import Coord
 from .piece import Piece
@@ -23,7 +22,7 @@ class Board:
     # Placement
     # ------------------------------------------------------------------
 
-    def is_valid(self, cells: List[Coord]) -> bool:
+    def is_valid(self, cells: list[Coord]) -> bool:
         """Return True if all cells are within bounds and unoccupied."""
         for r, c in cells:
             if r < 0 or r >= self.row_count or c < 0 or c >= self.col_count:
@@ -32,7 +31,7 @@ class Board:
                 return False
         return True
 
-    def place(self, cells: List[Coord]) -> None:
+    def place(self, cells: list[Coord]) -> None:
         """Stamp piece cells onto the grid."""
         for r, c in cells:
             self.grid[r, c] = 1
@@ -68,7 +67,7 @@ class Board:
     # State features (used as neural network input)
     # ------------------------------------------------------------------
 
-    def get_heights(self) -> List[int]:
+    def get_heights(self) -> list[int]:
         """Column heights (number of filled cells from bottom)."""
         heights = []
         for c in range(self.col_count):
@@ -87,12 +86,12 @@ class Board:
                 holes += int(col[filled[0] :].size - col[filled[0] :].sum())
         return holes
 
-    def get_bumpiness(self, heights: List[int] = None) -> int:
+    def get_bumpiness(self, heights: list[int] = None) -> int:
         """Sum of absolute differences between adjacent column heights."""
         h = heights or self.get_heights()
         return sum(abs(h[i] - h[i + 1]) for i in range(len(h) - 1))
 
-    def get_state_features(self, lines_cleared: int = 0) -> List[float]:
+    def get_state_features(self, lines_cleared: int = 0) -> list[float]:
         """
         4 scalar features fed to the DQN:
           [total_height, holes, bumpiness, lines_cleared]

@@ -1,5 +1,4 @@
 import os
-from typing import List
 
 from environment.tetris_env import TetrisEnv
 from agent.agent import TetrisAgent
@@ -22,7 +21,7 @@ class Trainer:
         self.agent = TetrisAgent(
             input_dim=config.input_dim,
             hidden_dim=config.hidden_dim,
-            lr=config.lr,
+            learning_rate=config.learning_rate,
             gamma=config.gamma,
             epsilon_start=config.epsilon_start,
             epsilon_end=config.epsilon_end,
@@ -53,7 +52,7 @@ class Trainer:
         legal_states = self.environment.reset()
         total_score = 0.0
         total_lines = 0
-        losses: List[float] = []
+        losses: list[float] = []
 
         while True:
             action, state_features = self.agent.select_action(legal_states)

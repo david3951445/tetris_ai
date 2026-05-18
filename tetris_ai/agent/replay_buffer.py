@@ -1,13 +1,12 @@
 import random
 from collections import deque
-from typing import List, Tuple
 
 import torch
 
 
-Experience = Tuple[
-    List[float],   # state features
-    List[float],   # next state features
+Experience = tuple[
+    list[float],   # state features
+    list[float],   # next state features
     float,         # reward
     bool,          # done
 ]
@@ -22,10 +21,10 @@ class ReplayBuffer:
     def __init__(self, capacity: int = 10_000):
         self.buffer: deque = deque(maxlen=capacity)
 
-    def push(self, state: List[float], next_state: List[float], reward: float, done: bool) -> None:
+    def push(self, state: list[float], next_state: list[float], reward: float, done: bool) -> None:
         self.buffer.append((state, next_state, reward, done))
 
-    def sample(self, batch_size: int, device: torch.device) -> Tuple[torch.Tensor, ...]:
+    def sample(self, batch_size: int, device: torch.device) -> tuple[torch.Tensor, ...]:
         batch = random.sample(self.buffer, batch_size)
         states, next_states, rewards, dones = zip(*batch)
         return (

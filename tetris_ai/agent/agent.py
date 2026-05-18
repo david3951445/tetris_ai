@@ -1,5 +1,4 @@
 import random
-from typing import Dict, List, Tuple
 
 import torch
 import torch.nn as nn
@@ -7,7 +6,6 @@ import torch.optim as optim
 
 from .dqn import DQN
 from .replay_buffer import ReplayBuffer
-
 
 class TetrisAgent:
     """
@@ -30,7 +28,7 @@ class TetrisAgent:
         self,
         input_dim: int = 4,
         hidden_dim: int = 64,
-        lr: float = 1e-3,
+        learning_rate: float = 1e-3,
         gamma: float = 0.99,
         epsilon_start: float = 1.0,
         epsilon_end: float = 0.01,
@@ -54,7 +52,7 @@ class TetrisAgent:
         self.target_net.load_state_dict(self.online_net.state_dict())
         self.target_net.eval()
 
-        self.optimizer = optim.Adam(self.online_net.parameters(), lr=lr)
+        self.optimizer = optim.Adam(self.online_net.parameters(), lr=learning_rate)
         self.loss_fn = nn.MSELoss()
         self.replay_buffer = ReplayBuffer(buffer_capacity)
 
@@ -62,7 +60,9 @@ class TetrisAgent:
     # Action selection
     # ------------------------------------------------------------------
 
-    def select_action(self, legal_states: List[Dict]) -> Tuple[Tuple[int, int], List[float]]:
+    def select_action(
+        self, legal_states: list[dict]
+    ) -> tuple[tuple[int, int], list[float]]:
         """
         legal_states: list of {"features": [...], "action": (col, rot)}
         Returns (action, chosen_state_features).
@@ -86,7 +86,7 @@ class TetrisAgent:
     # ------------------------------------------------------------------
 
     def store(
-        self, state: List[float], next_state: List[float], reward: float, done: bool
+        self, state: list[float], next_state: list[float], reward: float, done: bool
     ) -> None:
         self.replay_buffer.push(state, next_state, reward, done)
 

@@ -1,10 +1,10 @@
 import random
-from typing import Generator, List
+from collections.abc import Generator
 
 from .coord import Coord
 
 # Each piece: list of rotation states, each state is list of Coord offsets
-TETROMINOES: dict[str, List[List[Coord]]] = {
+TETROMINOES: dict[str, list[list[Coord]]] = {
     "I": [
         [Coord(0,0), Coord(0,1), Coord(0,2), Coord(0,3)],
         [Coord(0,0), Coord(1,0), Coord(2,0), Coord(3,0)],
@@ -48,12 +48,12 @@ class Piece:
 
     def __init__(self, name: str = None):
         self.name: str = name or random.choice(PIECE_NAMES)
-        self.rotations: List[List[Coord]] = TETROMINOES[self.name]
+        self.rotations: list[list[Coord]] = TETROMINOES[self.name]
         self.rotation_index: int = 0
         self.pos: Coord = Coord(0, 0)  # top-left anchor on the board
 
     @property
-    def cells(self) -> List[Coord]:
+    def cells(self) -> list[Coord]:
         """Current rotation's cell offsets."""
         return self.rotations[self.rotation_index]
 
@@ -61,7 +61,7 @@ class Piece:
     def num_rotations(self) -> int:
         return len(self.rotations)
 
-    def get_cells_at(self, row: int, col: int, rotation: int) -> List[Coord]:
+    def get_cells_at(self, row: int, col: int, rotation: int) -> list[Coord]:
         """Return absolute Coord positions for a given placement."""
         origin = Coord(row, col)
         return [origin + offset for offset in self.rotations[rotation]]

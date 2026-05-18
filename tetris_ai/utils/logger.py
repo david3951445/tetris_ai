@@ -1,5 +1,4 @@
 from collections import deque
-from typing import List
 
 
 class Logger:
@@ -11,7 +10,7 @@ class Logger:
         self.lines: deque = deque(maxlen=window)
         self.history = []
 
-    def record(self, episode: int, score: float, lines: int, epsilon: float, losses: List[float]) -> None:
+    def record(self, episode: int, score: float, lines: int, epsilon: float, losses: list[float]) -> None:
         self.scores.append(score)
         self.lines.append(lines)
         avg_loss = sum(losses) / len(losses) if losses else 0.0
