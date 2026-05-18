@@ -17,8 +17,8 @@ class Trainer:
     """
 
     def __init__(self, config: Config):
-        self.cfg = config
-        self.env = TetrisEnv(config.board_rows, config.board_cols)
+        self.config = config
+        self.environment = TetrisEnv(config.board_row_count, config.board_col_count)
         self.agent = TetrisAgent(
             input_dim=config.input_dim,
             hidden_dim=config.hidden_dim,
@@ -36,16 +36,16 @@ class Trainer:
         os.makedirs(config.checkpoint_dir, exist_ok=True)
 
     def run(self) -> None:
-        for episode in range(1, self.cfg.num_episodes + 1):
+        for episode in range(1, self.config.num_episodes + 1):
             score, lines, losses = self._run_episode()
 
             self.logger.record(episode, score, lines, self.agent.epsilon, losses)
 
-            if episode % self.cfg.log_every == 0:
+            if episode % self.config.log_every == 0:
                 self.logger.print_summary(episode)
 
-            if episode % self.cfg.save_every == 0:
-                path = os.path.join(self.cfg.checkpoint_dir, f"ep{episode}.pt")
+            if episode % self.config.save_every == 0:
+                path = os.path.join(self.config.checkpoint_dir, f"ep{episode}.pt")
                 self.agent.save(path)
                 print(f"  ✓ Saved checkpoint: {path}")
 
@@ -72,7 +72,7 @@ class Trainer:
                     best_idx = self.agent.online_net(feats).argmax().item()
                 next_features = next_legal_states[best_idx]["features"]
             else:
-                next_features = [0.0] * self.cfg.input_dim
+                next_features = [0.0] * self.config.input_dim
 
             self.agent.store(state_features, next_features, reward, done)
             loss = self.agent.train_step()

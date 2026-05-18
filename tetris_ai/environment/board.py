@@ -1,6 +1,7 @@
 import numpy as np
-from typing import List, Tuple
+from typing import List
 
+from .coord import Coord
 from .piece import Piece
 
 
@@ -10,10 +11,10 @@ class Board:
     collision detection, line clearing, and state feature extraction.
     """
 
-    def __init__(self, rows: int = 20, cols: int = 10):
-        self.rows = rows
-        self.cols = cols
-        self.grid: np.ndarray = np.zeros((rows, cols), dtype=np.int8)
+    def __init__(self, row_count: int = 20, col_count: int = 10):
+        self.row_count = row_count
+        self.col_count = col_count
+        self.grid: np.ndarray = np.zeros((row_count, col_count), dtype=np.int8)
 
     def reset(self) -> None:
         self.grid[:] = 0
@@ -22,16 +23,16 @@ class Board:
     # Placement
     # ------------------------------------------------------------------
 
-    def is_valid(self, cells: List[Tuple[int, int]]) -> bool:
+    def is_valid(self, cells: List[Coord]) -> bool:
         """Return True if all cells are within bounds and unoccupied."""
         for r, c in cells:
-            if r < 0 or r >= self.rows or c < 0 or c >= self.cols:
+            if r < 0 or r >= self.row_count or c < 0 or c >= self.col_count:
                 return False
             if self.grid[r, c]:
                 return False
         return True
 
-    def place(self, cells: List[Tuple[int, int]]) -> None:
+    def place(self, cells: List[Coord]) -> None:
         """Stamp piece cells onto the grid."""
         for r, c in cells:
             self.grid[r, c] = 1
@@ -54,12 +55,12 @@ class Board:
 
     def clear_lines(self) -> int:
         """Remove full rows, shift everything down. Returns count cleared."""
-        full_rows = [r for r in range(self.rows) if self.grid[r].all()]
+        full_rows = [r for r in range(self.row_count) if self.grid[r].all()]
         if not full_rows:
             return 0
-        keep = [r for r in range(self.rows) if r not in full_rows]
+        keep = [r for r in range(self.row_count) if r not in full_rows]
         new_grid = np.zeros_like(self.grid)
-        new_grid[self.rows - len(keep):] = self.grid[keep]
+        new_grid[self.row_count - len(keep) :] = self.grid[keep]
         self.grid = new_grid
         return len(full_rows)
 
@@ -70,26 +71,26 @@ class Board:
     def get_heights(self) -> List[int]:
         """Column heights (number of filled cells from bottom)."""
         heights = []
-        for c in range(self.cols):
+        for c in range(self.col_count):
             col = self.grid[:, c]
             filled = np.where(col)[0]
-            heights.append(self.rows - filled[0] if len(filled) else 0)
+            heights.append(self.row_count - filled[0] if len(filled) else 0)
         return heights
 
     def count_holes(self) -> int:
         """Cells below the top filled cell in each column that are empty."""
         holes = 0
-        for c in range(self.cols):
+        for c in range(self.col_count):
             col = self.grid[:, c]
             filled = np.where(col)[0]
             if len(filled):
-                holes += int(col[filled[0]:].size - col[filled[0]:].sum())
+                holes += int(col[filled[0] :].size - col[filled[0] :].sum())
         return holes
 
     def get_bumpiness(self, heights: List[int] = None) -> int:
         """Sum of absolute differences between adjacent column heights."""
         h = heights or self.get_heights()
-        return sum(abs(h[i] - h[i+1]) for i in range(len(h) - 1))
+        return sum(abs(h[i] - h[i + 1]) for i in range(len(h) - 1))
 
     def get_state_features(self, lines_cleared: int = 0) -> List[float]:
         """

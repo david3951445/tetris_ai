@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Generator, List, Tuple
 import numpy as np
 
 from .board import Board
@@ -17,8 +17,9 @@ class TetrisEnv:
                  of the *next* piece — the agent picks among these.
     """
 
-    def __init__(self, rows: int = 20, cols: int = 10):
-        self.board = Board(rows, cols)
+    def __init__(self, row_count: int = 20, col_count: int = 10):
+        self.board = Board(row_count, col_count)
+        self._bag: Generator = Piece.bag()  # shared 7-bag across the game
         self.current_piece: Piece = None
         self.next_piece: Piece = None
         self.score: int = 0
@@ -32,8 +33,9 @@ class TetrisEnv:
         self.board.reset()
         self.score = 0
         self.total_lines = 0
-        self.current_piece = Piece.random()
-        self.next_piece = Piece.random()
+        self._bag = Piece.bag()  # fresh bag on each episode
+        self.current_piece = next(self._bag)
+        self.next_piece = next(self._bag)
         return self._get_legal_states(self.current_piece)
 
     def step(self, action: Tuple[int, int]) -> Tuple[List[List[float]], float, bool]:
@@ -54,7 +56,7 @@ class TetrisEnv:
         done = self.board.is_game_over()
 
         self.current_piece = self.next_piece
-        self.next_piece = Piece.random()
+        self.next_piece = next(self._bag)
         next_states = self._get_legal_states(self.current_piece)
 
         return next_states, reward, done
@@ -71,7 +73,7 @@ class TetrisEnv:
         """
         states = []
         for rotation in range(piece.num_rotations):
-            for col in range(self.board.cols):
+            for col in range(self.board.col_count):
                 row = self.board.drop_row(piece, col, rotation)
                 cells = piece.get_cells_at(row, col, rotation)
                 if not self.board.is_valid(cells):
@@ -79,7 +81,9 @@ class TetrisEnv:
 
                 # Temporarily place the piece to get resulting features
                 self.board.place(cells)
-                lines = sum(1 for r in range(self.board.rows) if self.board.grid[r].all())
+                lines = sum(
+                    1 for r in range(self.board.row_count) if self.board.grid[r].all()
+                )
                 features = self.board.get_state_features(lines)
                 # Undo placement
                 for r, c in cells:
@@ -92,7 +96,7 @@ class TetrisEnv:
     def _compute_reward(self, lines_cleared: int) -> float:
         heights = self.board.get_heights()
         return (
-            lines_cleared ** 2 * 10
+            lines_cleared**2 * 10
             - self.board.count_holes() * 1.5
             - self.board.get_bumpiness(heights) * 0.5
             - sum(heights) * 0.1

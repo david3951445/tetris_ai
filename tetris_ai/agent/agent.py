@@ -85,7 +85,9 @@ class TetrisAgent:
     # Training
     # ------------------------------------------------------------------
 
-    def store(self, state: List[float], next_state: List[float], reward: float, done: bool) -> None:
+    def store(
+        self, state: List[float], next_state: List[float], reward: float, done: bool
+    ) -> None:
         self.replay_buffer.push(state, next_state, reward, done)
 
     def train_step(self) -> float | None:

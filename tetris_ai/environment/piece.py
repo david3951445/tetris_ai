@@ -1,40 +1,42 @@
 import random
-from typing import List, Tuple
+from typing import Generator, List
 
-# Each piece: list of rotation states, each state is list of (row, col) offsets
-TETROMINOES = {
+from .coord import Coord
+
+# Each piece: list of rotation states, each state is list of Coord offsets
+TETROMINOES: dict[str, List[List[Coord]]] = {
     "I": [
-        [(0,0),(0,1),(0,2),(0,3)],
-        [(0,0),(1,0),(2,0),(3,0)],
+        [Coord(0,0), Coord(0,1), Coord(0,2), Coord(0,3)],
+        [Coord(0,0), Coord(1,0), Coord(2,0), Coord(3,0)],
     ],
     "O": [
-        [(0,0),(0,1),(1,0),(1,1)],
+        [Coord(0,0), Coord(0,1), Coord(1,0), Coord(1,1)],
     ],
     "T": [
-        [(0,1),(1,0),(1,1),(1,2)],
-        [(0,0),(1,0),(2,0),(1,1)],
-        [(1,0),(1,1),(1,2),(0,1)],
-        [(0,1),(1,1),(2,1),(1,0)],
+        [Coord(0,1), Coord(1,0), Coord(1,1), Coord(1,2)],
+        [Coord(0,0), Coord(1,0), Coord(2,0), Coord(1,1)],
+        [Coord(1,0), Coord(1,1), Coord(1,2), Coord(0,1)],
+        [Coord(0,1), Coord(1,1), Coord(2,1), Coord(1,0)],
     ],
     "S": [
-        [(0,1),(0,2),(1,0),(1,1)],
-        [(0,0),(1,0),(1,1),(2,1)],
+        [Coord(0,1), Coord(0,2), Coord(1,0), Coord(1,1)],
+        [Coord(0,0), Coord(1,0), Coord(1,1), Coord(2,1)],
     ],
     "Z": [
-        [(0,0),(0,1),(1,1),(1,2)],
-        [(0,1),(1,0),(1,1),(2,0)],
+        [Coord(0,0), Coord(0,1), Coord(1,1), Coord(1,2)],
+        [Coord(0,1), Coord(1,0), Coord(1,1), Coord(2,0)],
     ],
     "J": [
-        [(0,0),(1,0),(1,1),(1,2)],
-        [(0,0),(0,1),(1,0),(2,0)],
-        [(1,0),(1,1),(1,2),(2,2)],
-        [(0,1),(1,1),(2,0),(2,1)],
+        [Coord(0,0), Coord(1,0), Coord(1,1), Coord(1,2)],
+        [Coord(0,0), Coord(0,1), Coord(1,0), Coord(2,0)],
+        [Coord(1,0), Coord(1,1), Coord(1,2), Coord(2,2)],
+        [Coord(0,1), Coord(1,1), Coord(2,0), Coord(2,1)],
     ],
     "L": [
-        [(0,2),(1,0),(1,1),(1,2)],
-        [(0,0),(1,0),(2,0),(2,1)],
-        [(1,0),(1,1),(1,2),(2,0)],
-        [(0,0),(0,1),(1,1),(2,1)],
+        [Coord(0,2), Coord(1,0), Coord(1,1), Coord(1,2)],
+        [Coord(0,0), Coord(1,0), Coord(2,0), Coord(2,1)],
+        [Coord(1,0), Coord(1,1), Coord(1,2), Coord(2,0)],
+        [Coord(0,0), Coord(0,1), Coord(1,1), Coord(2,1)],
     ],
 }
 
@@ -46,13 +48,12 @@ class Piece:
 
     def __init__(self, name: str = None):
         self.name: str = name or random.choice(PIECE_NAMES)
-        self.rotations: List[List[Tuple[int, int]]] = TETROMINOES[self.name]
+        self.rotations: List[List[Coord]] = TETROMINOES[self.name]
         self.rotation_index: int = 0
-        self.row: int = 0
-        self.col: int = 0
+        self.pos: Coord = Coord(0, 0)  # top-left anchor on the board
 
     @property
-    def cells(self) -> List[Tuple[int, int]]:
+    def cells(self) -> List[Coord]:
         """Current rotation's cell offsets."""
         return self.rotations[self.rotation_index]
 
@@ -60,13 +61,26 @@ class Piece:
     def num_rotations(self) -> int:
         return len(self.rotations)
 
-    def get_cells_at(self, row: int, col: int, rotation: int) -> List[Tuple[int, int]]:
-        """Return absolute (row, col) positions for a given placement."""
-        return [(row + dr, col + dc) for dr, dc in self.rotations[rotation]]
+    def get_cells_at(self, row: int, col: int, rotation: int) -> List[Coord]:
+        """Return absolute Coord positions for a given placement."""
+        origin = Coord(row, col)
+        return [origin + offset for offset in self.rotations[rotation]]
 
     def rotate(self) -> None:
         self.rotation_index = (self.rotation_index + 1) % self.num_rotations
 
     @staticmethod
-    def random() -> "Piece":
-        return Piece(random.choice(PIECE_NAMES))
+    def bag() -> Generator["Piece", None, None]:
+        """
+        7-bag randomiser: yields each of the 7 pieces in shuffled order,
+        then refills. Call repeatedly to get the next piece.
+
+        Usage:
+            gen = Piece.bag()
+            piece = next(gen)
+        """
+        while True:
+            bag = PIECE_NAMES[:]
+            random.shuffle(bag)
+            for name in bag:
+                yield Piece(name)
