@@ -6,37 +6,37 @@ from .coord import Coord
 # Each piece: list of rotation states, each state is list of Coord offsets
 TETROMINOES: dict[str, list[list[Coord]]] = {
     "I": [
-        [Coord(0,0), Coord(0,1), Coord(0,2), Coord(0,3)],
-        [Coord(0,0), Coord(1,0), Coord(2,0), Coord(3,0)],
+        [Coord(0, 0), Coord(0, 1), Coord(0, 2), Coord(0, 3)],
+        [Coord(0, 0), Coord(1, 0), Coord(2, 0), Coord(3, 0)],
     ],
     "O": [
-        [Coord(0,0), Coord(0,1), Coord(1,0), Coord(1,1)],
+        [Coord(0, 0), Coord(0, 1), Coord(1, 0), Coord(1, 1)],
     ],
     "T": [
-        [Coord(0,1), Coord(1,0), Coord(1,1), Coord(1,2)],
-        [Coord(0,0), Coord(1,0), Coord(2,0), Coord(1,1)],
-        [Coord(1,0), Coord(1,1), Coord(1,2), Coord(0,1)],
-        [Coord(0,1), Coord(1,1), Coord(2,1), Coord(1,0)],
+        [Coord(0, 1), Coord(1, 0), Coord(1, 1), Coord(1, 2)],
+        [Coord(0, 0), Coord(1, 0), Coord(2, 0), Coord(1, 1)],
+        [Coord(1, 0), Coord(1, 1), Coord(1, 2), Coord(0, 1)],
+        [Coord(0, 1), Coord(1, 1), Coord(2, 1), Coord(1, 0)],
     ],
     "S": [
-        [Coord(0,1), Coord(0,2), Coord(1,0), Coord(1,1)],
-        [Coord(0,0), Coord(1,0), Coord(1,1), Coord(2,1)],
+        [Coord(0, 1), Coord(0, 2), Coord(1, 0), Coord(1, 1)],
+        [Coord(0, 0), Coord(1, 0), Coord(1, 1), Coord(2, 1)],
     ],
     "Z": [
-        [Coord(0,0), Coord(0,1), Coord(1,1), Coord(1,2)],
-        [Coord(0,1), Coord(1,0), Coord(1,1), Coord(2,0)],
+        [Coord(0, 0), Coord(0, 1), Coord(1, 1), Coord(1, 2)],
+        [Coord(0, 1), Coord(1, 0), Coord(1, 1), Coord(2, 0)],
     ],
     "J": [
-        [Coord(0,0), Coord(1,0), Coord(1,1), Coord(1,2)],
-        [Coord(0,0), Coord(0,1), Coord(1,0), Coord(2,0)],
-        [Coord(1,0), Coord(1,1), Coord(1,2), Coord(2,2)],
-        [Coord(0,1), Coord(1,1), Coord(2,0), Coord(2,1)],
+        [Coord(0, 0), Coord(1, 0), Coord(1, 1), Coord(1, 2)],
+        [Coord(0, 0), Coord(0, 1), Coord(1, 0), Coord(2, 0)],
+        [Coord(1, 0), Coord(1, 1), Coord(1, 2), Coord(2, 2)],
+        [Coord(0, 1), Coord(1, 1), Coord(2, 0), Coord(2, 1)],
     ],
     "L": [
-        [Coord(0,2), Coord(1,0), Coord(1,1), Coord(1,2)],
-        [Coord(0,0), Coord(1,0), Coord(2,0), Coord(2,1)],
-        [Coord(1,0), Coord(1,1), Coord(1,2), Coord(2,0)],
-        [Coord(0,0), Coord(0,1), Coord(1,1), Coord(2,1)],
+        [Coord(0, 2), Coord(1, 0), Coord(1, 1), Coord(1, 2)],
+        [Coord(0, 0), Coord(1, 0), Coord(2, 0), Coord(2, 1)],
+        [Coord(1, 0), Coord(1, 1), Coord(1, 2), Coord(2, 0)],
+        [Coord(0, 0), Coord(0, 1), Coord(1, 1), Coord(2, 1)],
     ],
 }
 

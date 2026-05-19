@@ -14,9 +14,7 @@ class Logger:
         self.scores.append(score)
         self.lines.append(lines)
         avg_loss = sum(losses) / len(losses) if losses else 0.0
-        self.history.append(
-            {"episode": episode, "score": score, "lines": lines, "epsilon": epsilon, "loss": avg_loss}
-        )
+        self.history.append({"episode": episode, "score": score, "lines": lines, "epsilon": epsilon, "loss": avg_loss})
 
     def print_summary(self, episode: int) -> None:
         avg_score = sum(self.scores) / len(self.scores)

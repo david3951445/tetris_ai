@@ -7,7 +7,7 @@ class DQN(nn.Module):
     Simple fully-connected Q-network.
     Input:  4 board features  [total_height, holes, bumpiness, lines_cleared]
     Output: scalar Q-value for that state
-    
+
     The agent evaluates every legal next-state and picks the one with
     the highest Q-value (no discrete action head needed).
     """

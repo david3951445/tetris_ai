@@ -67,7 +67,7 @@ class Trainer:
                     dtype=torch.float32,
                     device=self.agent.device,
                 )
-                with __import__("torch").no_grad():
+                with torch.no_grad():
                     best_idx = self.agent.online_net(feats).argmax().item()
                 next_features = next_legal_states[best_idx]["features"]
             else:

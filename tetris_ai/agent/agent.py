@@ -7,6 +7,7 @@ import torch.optim as optim
 from .dqn import DQN
 from .replay_buffer import ReplayBuffer
 
+
 class TetrisAgent:
     """
     DQN agent for Tetris.
@@ -60,9 +61,7 @@ class TetrisAgent:
     # Action selection
     # ------------------------------------------------------------------
 
-    def select_action(
-        self, legal_states: list[dict]
-    ) -> tuple[tuple[int, int], list[float]]:
+    def select_action(self, legal_states: list[dict]) -> tuple[tuple[int, int], list[float]]:
         """
         legal_states: list of {"features": [...], "action": (col, rot)}
         Returns (action, chosen_state_features).
@@ -85,9 +84,7 @@ class TetrisAgent:
     # Training
     # ------------------------------------------------------------------
 
-    def store(
-        self, state: list[float], next_state: list[float], reward: float, done: bool
-    ) -> None:
+    def store(self, state: list[float], next_state: list[float], reward: float, done: bool) -> None:
         self.replay_buffer.push(state, next_state, reward, done)
 
     def train_step(self) -> float | None:
@@ -95,9 +92,7 @@ class TetrisAgent:
         if len(self.replay_buffer) < self.batch_size:
             return None
 
-        states, next_states, rewards, dones = self.replay_buffer.sample(
-            self.batch_size, self.device
-        )
+        states, next_states, rewards, dones = self.replay_buffer.sample(self.batch_size, self.device)
 
         # Current Q estimates
         q_pred = self.online_net(states)

@@ -81,9 +81,7 @@ class TetrisEnv:
 
                 # Temporarily place the piece to get resulting features
                 self.board.place(cells)
-                lines = sum(
-                    1 for r in range(self.board.row_count) if self.board.grid[r].all()
-                )
+                lines = sum(1 for r in range(self.board.row_count) if self.board.grid[r].all())
                 features = self.board.get_state_features(lines)
                 # Undo placement
                 for r, c in cells:
