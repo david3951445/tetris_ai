@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import random
 from collections.abc import Generator
 
@@ -43,19 +44,28 @@ TETROMINOES: dict[str, list[list[Coord]]] = {
 PIECE_NAMES = list(TETROMINOES.keys())
 
 
+@dataclass(frozen=True, slots=True)
+class Transform:
+    pos: Coord
+    rotation: int
+
+
 class Piece:
     """Represents a single Tetromino with its type, rotation state, and position."""
 
+    INITIAL_POS = Coord(0, 0)
+    INITIAL_ROTATION = 0
+
     def __init__(self, name: str = None):
-        self.name: str = name or random.choice(PIECE_NAMES)
+        self.name: str = name
         self.rotations: list[list[Coord]] = TETROMINOES[self.name]
-        self.rotation_index: int = 0
-        self.pos: Coord = Coord(0, 0)  # top-left anchor on the board
+        self.rotation_index: int = Piece.INITIAL_POS
+        self.pos: Coord = Piece.INITIAL_ROTATION
 
     @property
     def cells(self) -> list[Coord]:
-        """Current rotation's cell offsets."""
-        return self.rotations[self.rotation_index]
+        """Current rotation's cells."""
+        return self.pos + self.rotations[self.rotation_index]
 
     @property
     def num_rotations(self) -> int:
@@ -66,8 +76,9 @@ class Piece:
         origin = Coord(row, col)
         return [origin + offset for offset in self.rotations[rotation]]
 
-    def rotate(self) -> None:
-        self.rotation_index = (self.rotation_index + 1) % self.num_rotations
+    def transform(self, pos: Coord, rotation: int):
+        self.pos = pos
+        self.rotation_index = rotation
 
     @staticmethod
     def bag() -> Generator["Piece", None, None]:
